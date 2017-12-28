@@ -1,0 +1,286 @@
+﻿prompt PL/SQL Developer import file
+prompt Created on 2017年12月21日 by THINK
+set feedback off
+set define off
+prompt Dropping DESK...
+drop table DESK cascade constraints;
+prompt Dropping FOOD...
+drop table FOOD cascade constraints;
+prompt Dropping FOODORDER...
+drop table FOODORDER cascade constraints;
+prompt Dropping FOODORDERDETAIL...
+drop table FOODORDERDETAIL cascade constraints;
+prompt Dropping FOODTYPE...
+drop table FOODTYPE cascade constraints;
+prompt Creating DESK...
+create table DESK
+(
+  deskid NUMBER not null,
+  dname  VARCHAR2(20),
+  dstate NUMBER,
+  dtime  DATE
+)
+tablespace USERS
+  pctfree 10
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+alter table DESK
+  add constraint PK_DESK primary key (DESKID)
+  using index 
+  tablespace USERS
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+
+prompt Creating FOOD...
+create table FOOD
+(
+  foodid    NUMBER not null,
+  typeid    NUMBER,
+  foodname  NVARCHAR2(20),
+  price     NUMBER,
+  imagepath VARCHAR2(200),
+  synopsis  VARCHAR2(200)
+)
+tablespace USERS
+  pctfree 10
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+create index RELATIONSHIP_1_FK on FOOD (TYPEID)
+  tablespace USERS
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+alter table FOOD
+  add constraint PK_FOOD primary key (FOODID)
+  using index 
+  tablespace USERS
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+
+prompt Creating FOODORDER...
+create table FOODORDER
+(
+  orderid    NUMBER not null,
+  deskid     NUMBER,
+  ordertime  DATE,
+  orderstate NUMBER
+)
+tablespace USERS
+  pctfree 10
+  initrans 1
+  maxtrans 255;
+create index RELATIONSHIP_2_FK on FOODORDER (DESKID)
+  tablespace USERS
+  pctfree 10
+  initrans 2
+  maxtrans 255;
+alter table FOODORDER
+  add constraint PK_FOODORDER primary key (ORDERID)
+  using index 
+  tablespace USERS
+  pctfree 10
+  initrans 2
+  maxtrans 255;
+alter table FOODORDER
+  add constraint FK_FOODORDE_RELATIONS_DESK foreign key (DESKID)
+  references DESK (DESKID);
+
+prompt Creating FOODORDERDETAIL...
+create table FOODORDERDETAIL
+(
+  detailid NUMBER not null,
+  orderid  NUMBER,
+  foodid   NUMBER,
+  gcount   NUMBER
+)
+tablespace USERS
+  pctfree 10
+  initrans 1
+  maxtrans 255;
+create index RELATIONSHIP_3_FK on FOODORDERDETAIL (FOODID)
+  tablespace USERS
+  pctfree 10
+  initrans 2
+  maxtrans 255;
+create index RELATIONSHIP_4_FK on FOODORDERDETAIL (ORDERID)
+  tablespace USERS
+  pctfree 10
+  initrans 2
+  maxtrans 255;
+alter table FOODORDERDETAIL
+  add constraint PK_FOODORDERDETAIL primary key (DETAILID)
+  using index 
+  tablespace USERS
+  pctfree 10
+  initrans 2
+  maxtrans 255;
+alter table FOODORDERDETAIL
+  add constraint FK_FOODORDE_RELATIONS_FOOD foreign key (FOODID)
+  references FOOD (FOODID);
+alter table FOODORDERDETAIL
+  add constraint FK_FOODORDE_RELATIONS_FOODORDE foreign key (ORDERID)
+  references FOODORDER (ORDERID);
+
+prompt Creating FOODTYPE...
+create table FOODTYPE
+(
+  typeid   NUMBER not null,
+  typename NVARCHAR2(20)
+)
+tablespace USERS
+  pctfree 10
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+alter table FOODTYPE
+  add constraint PK_FOODTYPE primary key (TYPEID)
+  using index 
+  tablespace USERS
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+
+prompt Disabling triggers for DESK...
+alter table DESK disable all triggers;
+prompt Disabling triggers for FOOD...
+alter table FOOD disable all triggers;
+prompt Disabling triggers for FOODORDER...
+alter table FOODORDER disable all triggers;
+prompt Disabling triggers for FOODORDERDETAIL...
+alter table FOODORDERDETAIL disable all triggers;
+prompt Disabling triggers for FOODTYPE...
+alter table FOODTYPE disable all triggers;
+prompt Disabling foreign key constraints for FOODORDER...
+alter table FOODORDER disable constraint FK_FOODORDE_RELATIONS_DESK;
+prompt Disabling foreign key constraints for FOODORDERDETAIL...
+alter table FOODORDERDETAIL disable constraint FK_FOODORDE_RELATIONS_FOOD;
+alter table FOODORDERDETAIL disable constraint FK_FOODORDE_RELATIONS_FOODORDE;
+prompt Loading DESK...
+insert into DESK (deskid, dname, dstate, dtime)
+values (4, '纽约', 0, null);
+insert into DESK (deskid, dname, dstate, dtime)
+values (2, '伦敦', 0, null);
+insert into DESK (deskid, dname, dstate, dtime)
+values (3, '荷兰', 0, null);
+insert into DESK (deskid, dname, dstate, dtime)
+values (1, '中国', null, null);
+insert into DESK (deskid, dname, dstate, dtime)
+values (5, '上海', 0, null);
+commit;
+prompt 5 records loaded
+prompt Loading FOOD...
+insert into FOOD (foodid, typeid, foodname, price, imagepath, synopsis)
+values (18, 4, '牛肉面', 10, '/ab31c9ea15ce36d35c54604c31f33a87e850b1fb.jpg', null);
+insert into FOOD (foodid, typeid, foodname, price, imagepath, synopsis)
+values (11, 2, '白灼虾', 35, '/QQ截图20171020154559.png', null);
+insert into FOOD (foodid, typeid, foodname, price, imagepath, synopsis)
+values (12, 2, '白切鸡', 68, '/QQ截图20171020154607.png', null);
+insert into FOOD (foodid, typeid, foodname, price, imagepath, synopsis)
+values (4, 4, '鸡蛋西红柿', 10, '/769c367adab44aed11265d98b81c8701a08bfbe3.jpg', null);
+insert into FOOD (foodid, typeid, foodname, price, imagepath, synopsis)
+values (9, 1, '香锅肉丸', 25, '/QQ截图20171020154440.png', null);
+insert into FOOD (foodid, typeid, foodname, price, imagepath, synopsis)
+values (17, 3, '剁椒鱼头 ', 60, '/39b970cf3bc79f3d098c074cb1a1cd11738b29e6.jpg', null);
+insert into FOOD (foodid, typeid, foodname, price, imagepath, synopsis)
+values (21, 4, '馍馍', 200, '/2_classicsportscars_ferrarienzo.jpg', '翻滚吧');
+insert into FOOD (foodid, typeid, foodname, price, imagepath, synopsis)
+values (10, 1, '火腿白菜', 20, '/QQ截图20171020154509.png', null);
+insert into FOOD (foodid, typeid, foodname, price, imagepath, synopsis)
+values (13, 2, '烤乳猪', 100, '/QQ截图20171020154616.png', null);
+insert into FOOD (foodid, typeid, foodname, price, imagepath, synopsis)
+values (6, 1, '青椒鸡丁', 30, '/QQ截图20171020154202.png', null);
+insert into FOOD (foodid, typeid, foodname, price, imagepath, synopsis)
+values (7, 4, '豆腐西施', 50, '/0ac2d5628535e5ddb24074c27dc6a7efce1b62bb.jpg', null);
+insert into FOOD (foodid, typeid, foodname, price, imagepath, synopsis)
+values (8, 4, '麻辣烫', 10, '/4eac422ely1fhv3spn5i4j21w01w0qv8.jpg', null);
+insert into FOOD (foodid, typeid, foodname, price, imagepath, synopsis)
+values (14, 2, '烧鹅', 80, '/QQ截图20171020154625.png', null);
+insert into FOOD (foodid, typeid, foodname, price, imagepath, synopsis)
+values (15, 3, '冰糖湘莲', 20, '/d2dda144ad345982dbc7668607f431adcbef8451.jpg', null);
+insert into FOOD (foodid, typeid, foodname, price, imagepath, synopsis)
+values (16, 3, '东安子鸡', 50, '/7785a18b87d6277fd84ad14423381f30e824fcf3.jpg', null);
+commit;
+prompt 15 records loaded
+prompt Loading FOODORDER...
+prompt Table is empty
+prompt Loading FOODORDERDETAIL...
+prompt Table is empty
+prompt Loading FOODTYPE...
+insert into FOODTYPE (typeid, typename)
+values (4, '中国菜');
+insert into FOODTYPE (typeid, typename)
+values (1, '川菜');
+insert into FOODTYPE (typeid, typename)
+values (2, '粤菜');
+insert into FOODTYPE (typeid, typename)
+values (3, '湘菜');
+commit;
+prompt 4 records loaded
+prompt Enabling foreign key constraints for FOODORDER...
+alter table FOODORDER enable constraint FK_FOODORDE_RELATIONS_DESK;
+prompt Enabling foreign key constraints for FOODORDERDETAIL...
+alter table FOODORDERDETAIL enable constraint FK_FOODORDE_RELATIONS_FOOD;
+alter table FOODORDERDETAIL enable constraint FK_FOODORDE_RELATIONS_FOODORDE;
+prompt Enabling triggers for DESK...
+alter table DESK enable all triggers;
+prompt Enabling triggers for FOOD...
+alter table FOOD enable all triggers;
+prompt Enabling triggers for FOODORDER...
+alter table FOODORDER enable all triggers;
+prompt Enabling triggers for FOODORDERDETAIL...
+alter table FOODORDERDETAIL enable all triggers;
+prompt Enabling triggers for FOODTYPE...
+alter table FOODTYPE enable all triggers;
+set feedback on
+set define on
+prompt Done.
